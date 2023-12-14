@@ -1,0 +1,31 @@
+@startuml
+actor BusinessUser
+participant "POST /api/specific-codes Endpoint" as Endpoint
+participant ServerLogic
+database DB
+
+activate BusinessUser
+BusinessUser -> Endpoint : POST invitation data (inviteCodes, authorEmail, userEmail)
+activate Endpoint
+
+Endpoint -> ServerLogic : Validate provided inviteCodes
+activate ServerLogic
+
+alt Validation Failed
+    ServerLogic -> Endpoint : Invalid inviteCode(s)
+    Endpoint -> BusinessUser : Return error message
+    deactivate ServerLogic
+else Validation Passed
+    ServerLogic -> Endpoint : Valid inviteCode(s)
+    Endpoint -> DB: Store inviteCodes with authorEmail and userEmail
+    activate DB
+    DB -> Endpoint : Acknowledge storage
+    deactivate DB
+    ServerLogic -> Endpoint : Generate response with inviteCodes
+    Endpoint -> BusinessUser : Respond with inviteCode(s)
+    deactivate ServerLogic
+end
+
+deactivate Endpoint
+deactivate BusinessUser
+@enduml

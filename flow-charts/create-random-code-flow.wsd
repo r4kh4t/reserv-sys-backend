@@ -1,0 +1,12 @@
+@startuml
+actor BusinessUser
+participant "POST /api/random-code Endpoint" as Endpoint
+participant ServerLogic
+database DB
+
+BusinessUser -> Endpoint : POST with authorEmail and userEmail
+Endpoint -> ServerLogic : Generate random inviteCode
+ServerLogic -> Endpoint : Return generated inviteCode
+Endpoint -> DB: Save inviteCode with authorEmail and userEmail
+Endpoint -> BusinessUser: Respond with inviteCode
+@enduml

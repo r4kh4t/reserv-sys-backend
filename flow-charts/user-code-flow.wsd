@@ -1,0 +1,25 @@
+@startuml
+actor User
+participant "API Endpoint" as API
+database DB
+
+User -> API: Input invite code and email
+API -> DB: Check if invite code exists
+alt Invite code not found
+    DB -> API: Error: Code not found
+    API -> User: Error: Invalid code
+else Invite code found
+    DB -> API: Retrieve code details
+    API -> API: Compare input email and user_email from DB
+    alt Emails do not match
+        API -> User: Error: Email mismatch
+    else Emails match
+        API -> API: Check if is_used is false
+        alt is_used is true
+            API -> User: Error: Code already used
+        else is_used is false
+            API -> User: Status 200 - OK
+        end
+    end
+end
+@enduml
